@@ -1,0 +1,83 @@
+@if (!selected()) {
+  <div class="card">
+    <div class="card-header">
+      <h3>Clientes con cuenta de crédito</h3>
+      <button class="btn btn-primary btn-sm">+ Nuevo cliente</button>
+    </div>
+    <table class="tabla" aria-label="Lista de clientes con fiado">
+      <thead><tr>
+        <th scope="col">Cliente</th>
+        <th scope="col">Teléfono</th>
+        <th scope="col" style="text-align:right">Saldo pendiente</th>
+        <th scope="col" style="text-align:center">Estado</th>
+        <th scope="col"><span class="sr-only">Acciones</span></th>
+      </tr></thead>
+      <tbody>
+        @for (c of clientes(); track c.id) {
+          <tr>
+            <td class="fw-bold">{{ c.nombre }}</td>
+            <td>{{ c.telefono }}</td>
+            <td style="text-align:right" class="fw-bold"
+                [class.text-danger]="c.saldo > 0">{{ fmt(c.saldo) }}</td>
+            <td style="text-align:center">
+              <span class="badge" [class]="estadoBadge(c.saldo)">{{ estadoLabel(c.saldo) }}</span>
+            </td>
+            <td>
+              <button class="btn btn-outline btn-sm" (click)="seleccionar(c)">Ver detalle</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+} @else {
+  <button class="btn btn-outline btn-sm" style="margin-bottom:14px" (click)="volver()">← Volver a la lista</button>
+  <div class="card">
+    <div class="detalle-header">
+      <div>
+        <h2 class="detalle-nombre">{{ selected()!.nombre }}</h2>
+        <p class="text-muted">📞 {{ selected()!.telefono }}</p>
+      </div>
+      <div class="saldo-box">
+        <p class="text-muted" style="font-size:12px">Saldo pendiente</p>
+        <p class="saldo-valor" [class.text-danger]="selected()!.saldo > 0" [class.text-success]="selected()!.saldo === 0">
+          {{ fmt(selected()!.saldo) }}
+        </p>
+      </div>
+    </div>
+
+    <h4 style="font-size:13px;margin-bottom:10px;color:#555">Historial de ventas fiadas</h4>
+    <table class="tabla" style="margin-bottom:18px">
+      <thead><tr><th scope="col">Fecha</th><th scope="col">Productos</th><th scope="col" style="text-align:right">Valor</th></tr></thead>
+      <tbody>
+        <tr><td>15/05/2025</td><td>Chocoramo x3, Papas x2</td><td style="text-align:right">$8.100</td></tr>
+        <tr><td>12/05/2025</td><td>Gatorade x2, Bom Bom x5</td><td style="text-align:right">$9.900</td></tr>
+        <tr><td>08/05/2025</td><td>Surtido mecato variado</td><td style="text-align:right">$17.000</td></tr>
+      </tbody>
+    </table>
+
+    @if (selected()!.saldo > 0 && !abonoOk()) {
+      <div class="abono-section">
+        <h4 style="font-size:13px;margin-bottom:10px">Registrar abono</h4>
+        <div class="abono-row">
+          <div class="form-group" style="flex:1;margin-bottom:0">
+            <label for="monto-abono">Monto del abono <span style="color:#E24B4A">*</span></label>
+            <input id="monto-abono" type="number" class="form-control"
+                   placeholder="Ej: 10000" min="1"
+                   [ngModel]="montoAbono()" (ngModelChange)="montoAbono.set($event)"/>
+          </div>
+          <button class="btn btn-primary" (click)="registrarAbono()">Registrar abono</button>
+        </div>
+      </div>
+    }
+    @if (abonoOk()) {
+      <div class="alert alert-success" role="alert">
+        ✅ Abono de <strong>{{ fmt(montoAbono()) }}</strong> registrado correctamente.
+        Nuevo saldo: <strong>{{ fmt(selected()!.saldo) }}</strong>
+      </div>
+    }
+    @if (selected()!.saldo === 0) {
+      <div class="alert alert-success">✅ Este cliente no tiene saldo pendiente.</div>
+    }
+  </div>
+}

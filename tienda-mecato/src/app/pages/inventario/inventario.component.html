@@ -1,0 +1,54 @@
+@if (alertas().length > 0) {
+  <div class="alert alert-danger" role="alert">
+    <strong>{{ alertas().length }} producto(s)</strong> con stock crítico: {{ nombresAlertas() }}
+  </div>
+}
+
+<div class="card">
+  <div class="filtros">
+    <input class="form-control" placeholder="Buscar por nombre o código..."
+           [ngModel]="busqueda()" (ngModelChange)="busqueda.set($event)"
+           aria-label="Buscar producto"/>
+    <select class="form-control cat-select"
+            [ngModel]="categoria()" (ngModelChange)="categoria.set($event)"
+            aria-label="Filtrar por categoría">
+      @for (c of categorias; track c) { <option>{{ c }}</option> }
+    </select>
+    <button class="btn btn-primary btn-sm">+ Nuevo producto</button>
+  </div>
+
+  <table class="tabla" aria-label="Tabla de inventario">
+    <thead><tr>
+      <th scope="col">Código</th>
+      <th scope="col">Producto</th>
+      <th scope="col">Categoría</th>
+      <th scope="col" style="text-align:center">Stock actual</th>
+      <th scope="col" style="text-align:center">Mínimo</th>
+      <th scope="col" style="text-align:right">Precio venta</th>
+      <th scope="col" style="text-align:right">Precio costo</th>
+      <th scope="col"><span class="sr-only">Acciones</span></th>
+    </tr></thead>
+    <tbody>
+      @for (p of filtrados(); track p.id) {
+        <tr [class.fila-alerta]="esAlerta(p)">
+          <td><code>{{ p.codigoBarras }}</code></td>
+          <td class="fw-bold">{{ p.nombre }}</td>
+          <td>{{ p.categoria }}</td>
+          <td style="text-align:center">
+            @if (esAlerta(p)) {
+              <span class="text-danger fw-bold" [attr.aria-label]="'Stock crítico: ' + p.stockActual + ' unidades'">
+                ⚠ {{ p.stockActual }}
+              </span>
+            } @else {
+              <span class="text-success fw-bold">{{ p.stockActual }}</span>
+            }
+          </td>
+          <td style="text-align:center" class="text-muted">{{ p.stockMinimo }}</td>
+          <td style="text-align:right">{{ fmt(p.precioVenta) }}</td>
+          <td style="text-align:right" class="text-muted">{{ fmt(p.precioCosto) }}</td>
+          <td><button class="btn btn-outline btn-sm">Editar</button></td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

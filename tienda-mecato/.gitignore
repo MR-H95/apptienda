@@ -1,0 +1,17 @@
+# Dependencias
+node_modules/
+.pnp
+.pnp.js
+
+# Build
+dist/
+tmp/
+out-tsc/
+
+# Misc
+.angular/
+.sass-cache/
+*.js.map
+
+# Variables de entorno
+.env

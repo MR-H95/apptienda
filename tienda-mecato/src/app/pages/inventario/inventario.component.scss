@@ -1,0 +1,6 @@
+.filtros { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap;
+  input { flex: 1; min-width: 200px; }
+  .cat-select { width: 160px; }
+}
+.fila-alerta td { background: #fff8f8 !important; }
+code { font-family: monospace; font-size: 11px; color: #888; }

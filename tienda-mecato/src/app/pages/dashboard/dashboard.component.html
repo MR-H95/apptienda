@@ -1,0 +1,64 @@
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">Ventas hoy</div>
+    <div class="kpi-val">{{ formatCurrency(totalHoy()) }}</div>
+    <div class="kpi-sub">{{ ventas.length }} transacciones registradas</div>
+  </div>
+  <div class="kpi-card" [class.danger]="alertasStock > 0">
+    <div class="kpi-label">Alertas de stock</div>
+    <div class="kpi-val" [class.text-danger]="alertasStock > 0">{{ alertasStock }} productos</div>
+    <div class="kpi-sub">por debajo del mínimo definido</div>
+  </div>
+  <div class="kpi-card warning">
+    <div class="kpi-label">Fiados pendientes</div>
+    <div class="kpi-val">{{ formatCurrency(fiadosPendientes) }}</div>
+    <div class="kpi-sub">{{ clientesConSaldo }} clientes con saldo</div>
+  </div>
+  <div class="kpi-card info">
+    <div class="kpi-label">Compras del mes</div>
+    <div class="kpi-val">{{ formatCurrency(comprasMes) }}</div>
+    <div class="kpi-sub">3 órdenes registradas</div>
+  </div>
+</div>
+
+@if (alertasStock > 0) {
+  <div class="alert alert-danger" role="alert">
+    ⚠️ Hay <strong>{{ alertasStock }} productos</strong> con stock por debajo del mínimo.
+    <a routerLink="/inventario" class="alert-link">Ver inventario</a>
+  </div>
+}
+
+<div class="card">
+  <div class="card-header">
+    <h3>Últimas ventas del día</h3>
+    <a routerLink="/ventas" class="btn btn-primary btn-sm">+ Nueva venta</a>
+  </div>
+  <table class="tabla" aria-label="Tabla de últimas ventas">
+    <thead>
+      <tr>
+        <th scope="col"># Venta</th>
+        <th scope="col">Hora</th>
+        <th scope="col">Ítems</th>
+        <th scope="col">Total</th>
+        <th scope="col">Método</th>
+        <th scope="col">Cajero</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (v of ventas; track v.id) {
+        <tr>
+          <td><code>{{ v.id }}</code></td>
+          <td>{{ v.hora }}</td>
+          <td>{{ v.items }}</td>
+          <td class="fw-bold">{{ formatCurrency(v.total) }}</td>
+          <td>
+            <span class="badge" [class]="v.metodoPago === 'fiado' ? 'badge-yellow' : 'badge-green'">
+              {{ v.metodoPago | titlecase }}
+            </span>
+          </td>
+          <td>{{ v.cajero }}{{ v.cliente ? ' → ' + v.cliente : '' }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

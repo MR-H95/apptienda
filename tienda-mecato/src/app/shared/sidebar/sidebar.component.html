@@ -1,0 +1,29 @@
+<aside class="sidebar" role="navigation" aria-label="Menú principal">
+  <div class="sidebar-logo">
+    <span class="logo-icon" aria-hidden="true">🍬</span>
+    <div>
+      <h1>Tienda Mecato</h1>
+      <p>Sistema de gestión</p>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    @for (item of navItems(); track item.path) {
+      <a [routerLink]="item.path"
+         routerLinkActive="active"
+         class="nav-item"
+         [attr.aria-label]="item.label">
+        <span class="nav-icon" aria-hidden="true">{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+  <div class="sidebar-user">
+    <div class="user-name">{{ auth.user()?.nombre }}</div>
+    <div class="user-role">{{ auth.user()?.rol | titlecase }}</div>
+    <button class="logout-btn" (click)="logout()" aria-label="Cerrar sesión">
+      Cerrar sesión
+    </button>
+  </div>
+</aside>

@@ -1,0 +1,53 @@
+.login-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f2;
+  padding: 20px;
+}
+.login-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 32px;
+  width: 100%;
+  max-width: 380px;
+  border: 1px solid #e0e0dc;
+  box-shadow: 0 4px 20px rgba(0,0,0,.1);
+}
+.login-header {
+  text-align: center;
+  margin-bottom: 24px;
+  .logo-emoji { font-size: 44px; display: block; margin-bottom: 10px; }
+  h1 { font-size: 20px; color: #1a1a18; margin: 0 0 4px; }
+  p  { font-size: 13px; color: #888; margin: 0; }
+}
+.input-icon-wrap { position: relative; }
+.toggle-pass {
+  position: absolute; right: 10px; top: 50%;
+  transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  font-size: 14px; color: #888;
+  &:hover { color: #555; }
+}
+.req { color: #E24B4A; margin-left: 2px; }
+.forgot-link {
+  display: block; width: 100%; border: 0; background: none;
+  text-align: center; font-size: 12px;
+  color: #39A900; margin-top: 14px; cursor: pointer;
+  &:hover { text-decoration: underline; }
+}
+.text-button {
+  display: block; width: 100%; border: 0; background: none;
+  color: #39A900; cursor: pointer; font-size: 12px; margin-top: 14px;
+  &:hover { text-decoration: underline; }
+}
+.recovery-intro {
+  color: #666; font-size: 13px; line-height: 1.45; margin: 0 0 18px;
+}
+.demo-note {
+  margin-top: 14px; padding: 10px 12px;
+  background: #f8fdf5; border-radius: 4px;
+  font-size: 11px; color: #555;
+  border: 1px solid #d0edd0;
+}

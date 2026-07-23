@@ -1,0 +1,106 @@
+<div class="login-wrap">
+  <div class="login-card" role="main">
+    <div class="login-header">
+      <span class="logo-emoji" aria-hidden="true">🍬</span>
+      <h1>Tienda de Mecato</h1>
+      <p>Sistema de gestión – Aguas Claras, Meta</p>
+    </div>
+
+    @if (modoRecuperacion) {
+      @if (recoverySent) {
+        <div class="alert alert-success" role="status">
+          Revisamos la solicitud para <strong>{{ recoveryForm.get('email')?.value }}</strong>.
+          Si el correo está registrado, recibirás instrucciones para recuperar tu contraseña.
+        </div>
+        <button type="button" class="btn btn-primary btn-block" (click)="volverAlLogin()">
+          Volver al inicio de sesión
+        </button>
+      } @else {
+        <form [formGroup]="recoveryForm" (ngSubmit)="solicitarRecuperacion()" novalidate>
+          <p class="recovery-intro">Ingresa tu correo y te enviaremos instrucciones para recuperar el acceso.</p>
+          <div class="form-group">
+            <label for="recovery-email">Correo electrónico <span class="req" aria-hidden="true">*</span></label>
+            <input id="recovery-email" type="email" class="form-control"
+                   formControlName="email"
+                   placeholder="nombre@tienda.local"
+                   [class.is-invalid]="recoveryFields['email'].invalid && recoveryFields['email'].touched"
+                   aria-required="true"
+                   autocomplete="email"/>
+            @if (recoveryFields['email'].invalid && recoveryFields['email'].touched) {
+              <div class="invalid-feedback" role="alert">
+                Ingresa un correo electrónico válido.
+              </div>
+            }
+          </div>
+          @if (recoveryError) {
+            <div class="alert alert-danger" role="alert">⚠ {{ recoveryError }}</div>
+          }
+          <button type="submit" class="btn btn-primary btn-block btn-lg">ENVIAR INSTRUCCIONES</button>
+        </form>
+        <button type="button" class="text-button" (click)="volverAlLogin()">Volver al inicio de sesión</button>
+      }
+    } @else {
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+      <div class="form-group">
+        <label for="email">Correo electrónico <span class="req" aria-hidden="true">*</span></label>
+        <input id="email" type="email" class="form-control"
+               formControlName="email"
+               placeholder="nombre@tienda.local"
+               [class.is-invalid]="f['email'].invalid && f['email'].touched"
+               aria-required="true"
+               autocomplete="email"/>
+        @if (f['email'].invalid && f['email'].touched) {
+          <div class="invalid-feedback" role="alert">
+            {{ f['email'].errors?.['required'] ? 'El correo es obligatorio.' : 'Ingresa un correo válido. Ejemplo: nombre@dominio.com' }}
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña <span class="req" aria-hidden="true">*</span></label>
+        <div class="input-icon-wrap">
+          <input id="password"
+                 [type]="showPassword ? 'text' : 'password'"
+                 class="form-control"
+                 formControlName="password"
+                 placeholder="••••••••"
+                 [class.is-invalid]="f['password'].invalid && f['password'].touched"
+                 aria-required="true"
+                 autocomplete="current-password"/>
+          <button type="button" class="toggle-pass"
+                  (click)="showPassword = !showPassword"
+                  [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            {{ showPassword ? '🙈' : '👁' }}
+          </button>
+        </div>
+        @if (f['password'].invalid && f['password'].touched) {
+          <div class="invalid-feedback" role="alert">La contraseña debe tener al menos 6 caracteres.</div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="rol">Rol de acceso <span class="req" aria-hidden="true">*</span></label>
+        <select id="rol" class="form-control" formControlName="rol" aria-required="true">
+          <option value="administrador">Administrador</option>
+          <option value="cajero">Cajero</option>
+        </select>
+      </div>
+
+      @if (errorMsg) {
+        <div class="alert alert-danger" role="alert">⚠ {{ errorMsg }}</div>
+      }
+
+      <button type="submit" class="btn btn-primary btn-block btn-lg">
+        INGRESAR AL SISTEMA
+      </button>
+      </form>
+
+      <button type="button" class="forgot-link" (click)="mostrarRecuperacion()">
+        ¿Olvidó su contraseña?
+      </button>
+    }
+    <div class="demo-note">
+      <strong>Nota:</strong> Selecciona "Administrador" para acceder a todos los módulos o "Cajero" para acceso limitado a Ventas y Fiados.
+    </div>
+  </div>
+</div>

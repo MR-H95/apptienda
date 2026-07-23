@@ -1,0 +1,80 @@
+<div class="card filtros-card">
+  <div class="filtros-row">
+    <div class="form-group" style="min-width:200px;margin-bottom:0">
+      <label for="tipo-rep">Tipo de reporte</label>
+      <select id="tipo-rep" class="form-control" [ngModel]="tipo()" (ngModelChange)="cambiarTipo($event)">
+        <option value="ventas">Ventas por período</option>
+        <option value="inventario">Valorización de inventario</option>
+        <option value="fiados">Cartera de fiados</option>
+      </select>
+    </div>
+    @if (tipo() === 'ventas') {
+      <div class="form-group" style="margin-bottom:0">
+        <label for="desde">Desde</label>
+        <input id="desde" type="date" class="form-control" style="width:150px" [ngModel]="desde()" (ngModelChange)="desde.set($event)"/>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label for="hasta">Hasta</label>
+        <input id="hasta" type="date" class="form-control" style="width:150px" [ngModel]="hasta()" (ngModelChange)="hasta.set($event)"/>
+      </div>
+    }
+    <button class="btn btn-primary" style="align-self:flex-end" (click)="generar()">Generar reporte</button>
+  </div>
+</div>
+
+@if (generado()) {
+  <div class="card">
+    <div class="card-header">
+      <h3>{{ tipo() === 'ventas' ? 'Ventas del período' : tipo() === 'inventario' ? 'Valorización de inventario' : 'Cartera de fiados' }}</h3>
+      <div class="d-flex gap-8">
+        <button class="btn btn-outline btn-sm" (click)="exportar('pdf')">📄 PDF</button>
+        <button class="btn btn-outline btn-sm" (click)="exportar('excel')">📊 Excel</button>
+      </div>
+    </div>
+
+    @if (tipo() === 'ventas') {
+      <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
+        <div class="kpi-card"><div class="kpi-label">Total período</div><div class="kpi-val">{{ fmt(totalVentas()) }}</div></div>
+        <div class="kpi-card info"><div class="kpi-label">Transacciones</div><div class="kpi-val">{{ ventasData.length * 3 }}</div></div>
+        <div class="kpi-card warning"><div class="kpi-label">Promedio diario</div><div class="kpi-val">{{ fmt(totalVentas() / 19) }}</div></div>
+      </div>
+      <table class="tabla" aria-label="Reporte de ventas">
+        <thead><tr><th scope="col">Venta</th><th scope="col">Hora</th><th scope="col">Ítems</th><th scope="col" style="text-align:right">Total</th><th scope="col">Método</th><th scope="col">Cajero</th></tr></thead>
+        <tbody>
+          @for (v of ventasData; track v.id) {
+            <tr>
+              <td><code>{{ v.id }}</code></td><td>{{ v.hora }}</td><td>{{ v.items }}</td>
+              <td style="text-align:right" class="fw-bold">{{ fmt(v.total) }}</td>
+              <td><span class="badge" [class]="v.metodo === 'Fiado' ? 'badge-yellow' : 'badge-green'">{{ v.metodo }}</span></td>
+              <td>{{ v.cajero }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    @if (tipo() === 'inventario') {
+      <table class="tabla" aria-label="Reporte de inventario">
+        <thead><tr><th scope="col">Producto</th><th scope="col">Categoría</th><th scope="col" style="text-align:center">Stock</th><th scope="col" style="text-align:right">Precio costo</th><th scope="col" style="text-align:right">Valor total</th></tr></thead>
+        <tbody>
+          @for (p of inventarioData; track p.nombre) {
+            <tr><td class="fw-bold">{{ p.nombre }}</td><td>{{ p.cat }}</td><td style="text-align:center">{{ p.stock }}</td><td style="text-align:right">{{ fmt(p.costo) }}</td><td style="text-align:right" class="fw-bold">{{ fmt(p.costo * p.stock) }}</td></tr>
+          }
+          <tr class="total-row"><td colspan="4" style="text-align:right;font-weight:700">VALOR TOTAL DEL INVENTARIO:</td><td style="text-align:right;font-weight:700;color:#39A900">{{ fmt(totalInventario()) }}</td></tr>
+        </tbody>
+      </table>
+    }
+
+    @if (tipo() === 'fiados') {
+      <table class="tabla" aria-label="Reporte de cartera">
+        <thead><tr><th scope="col">Cliente</th><th scope="col">Teléfono</th><th scope="col" style="text-align:right">Saldo pendiente</th><th scope="col" style="text-align:center">Estado</th></tr></thead>
+        <tbody>
+          @for (c of fiadosData; track c.nombre) {
+            <tr><td class="fw-bold">{{ c.nombre }}</td><td>{{ c.tel }}</td><td style="text-align:right;font-weight:600;color:#E24B4A">{{ fmt(c.saldo) }}</td><td style="text-align:center"><span class="badge" [class]="c.saldo > 20000 ? 'badge-red' : 'badge-yellow'">{{ c.saldo > 20000 ? 'Vencido' : 'Pendiente' }}</span></td></tr>
+          }
+          <tr class="total-row"><td colspan="2" style="text-align:right;font-weight:700">TOTAL CARTERA:</td><td style="text-align:right;font-weight:700;color:#E24B4A">{{ fmt(totalFiados()) }}</td><td></td></tr>
+        </tbody>
+      </table>
+    }
+  </div>
+}

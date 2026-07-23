@@ -1,0 +1,120 @@
+@if (ventaOk()) {
+  <div class="venta-ok card text-center">
+    <div class="check-icon" aria-hidden="true">✅</div>
+    <h2>¡Venta registrada correctamente!</h2>
+    <p>Total cobrado: <strong>{{ fmt(total()) }}</strong></p>
+    <p class="text-muted">El stock fue actualizado automáticamente.</p>
+    <button class="btn btn-primary mt-8" (click)="nuevaVenta()">+ Nueva venta</button>
+  </div>
+} @else {
+  <div class="ventas-layout">
+    <!-- Columna izquierda -->
+    <div>
+      <div class="card">
+        <label for="buscador" class="fw-bold">Buscar producto por nombre o código de barras</label>
+        <div class="search-wrap">
+          <input id="buscador"
+                 type="search"
+                 class="form-control"
+                 placeholder="Ej: Chocoramo o CHO001..."
+                 [ngModel]="busqueda()"
+                 (ngModelChange)="busqueda.set($event)"
+                 autocomplete="off"
+                 aria-label="Buscar producto"/>
+          @if (productosFiltrados().length > 0) {
+            <div class="autocomplete-panel" role="listbox" aria-label="Resultados de búsqueda">
+              @for (p of productosFiltrados(); track p.id) {
+                <div class="autocomplete-item" role="option" (click)="agregar(p)">
+                  <div>
+                    <div class="item-name">{{ p.nombre }}</div>
+                    <div class="item-sub">{{ p.codigoBarras }} · Stock:
+                      <span [class.text-danger]="p.stockActual < p.stockMinimo">{{ p.stockActual }}</span>
+                    </div>
+                  </div>
+                  <div class="item-price">{{ fmt(p.precioVenta) }}</div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size:14px;margin-bottom:12px">Productos en la venta</h3>
+        @if (carrito().length === 0) {
+          <p class="empty-cart text-muted text-center">Busca y agrega productos para iniciar la venta</p>
+        } @else {
+          <table class="tabla" aria-label="Carrito de venta">
+            <thead><tr>
+              <th scope="col">Producto</th>
+              <th scope="col" style="text-align:center">Cant.</th>
+              <th scope="col" style="text-align:right">Precio</th>
+              <th scope="col" style="text-align:right">Subtotal</th>
+              <th scope="col"><span class="sr-only">Quitar</span></th>
+            </tr></thead>
+            <tbody>
+              @for (item of carrito(); track item.producto.id) {
+                <tr>
+                  <td>{{ item.producto.nombre }}</td>
+                  <td style="text-align:center">
+                    <input type="number" class="qty-input" min="1"
+                           [value]="item.cantidad"
+                           (change)="cambiarCantidad(item.producto.id, +$any($event.target).value)"
+                            [attr.aria-label]="'Cantidad de ' + item.producto.nombre"/>
+                  </td>
+                  <td style="text-align:right">{{ fmt(item.producto.precioVenta) }}</td>
+                  <td style="text-align:right" class="fw-bold">{{ fmt(item.subtotal) }}</td>
+                  <td>
+                    <button class="btn-remove" (click)="quitar(item.producto.id)"
+                          [attr.aria-label]="'Quitar ' + item.producto.nombre">✕</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </div>
+    </div>
+
+    <!-- Columna derecha: resumen -->
+    <div class="card resumen-card">
+      <h3 style="font-size:14px;margin-bottom:14px">Resumen de la venta</h3>
+      <div class="resumen-row"><span class="text-muted">Subtotal:</span><span>{{ fmt(total()) }}</span></div>
+      <div class="resumen-total"><span>Total:</span><span class="text-success">{{ fmt(total()) }}</span></div>
+
+      <div class="form-group">
+        <label for="metodo">Método de pago</label>
+        <select id="metodo" class="form-control"
+                [ngModel]="metodo()"
+                (ngModelChange)="metodo.set($event)">
+          <option value="efectivo">Efectivo</option>
+          <option value="transferencia">Transferencia</option>
+          <option value="fiado">Fiado</option>
+        </select>
+      </div>
+
+      @if (metodo() === 'fiado') {
+        <div class="form-group">
+          <label for="cliente">Cliente <span style="color:#E24B4A">*</span></label>
+          <select id="cliente" class="form-control">
+            <option value="">Seleccionar cliente...</option>
+            @for (c of clientes; track c.id) {
+              <option [value]="c.id">{{ c.nombre }}</option>
+            }
+          </select>
+        </div>
+      }
+
+      <button class="btn btn-primary btn-block btn-lg"
+              (click)="cobrar()"
+              [disabled]="carrito().length === 0">
+        {{ carrito().length === 0 ? 'Agrega productos' : '💳 COBRAR ' + fmt(total()) }}
+      </button>
+      @if (carrito().length > 0) {
+        <button class="btn btn-outline btn-block mt-8" (click)="carrito.set([])">
+          Limpiar carrito
+        </button>
+      }
+    </div>
+  </div>
+}

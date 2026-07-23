@@ -1,0 +1,16 @@
+@if (auth.isLoggedIn()) {
+  <div class="page-layout">
+    <app-sidebar />
+    <div class="main-content">
+      <div class="topbar">
+        <h2>Sistema de Gestión – Tienda de Mecato</h2>
+        <span class="date">{{ today }}</span>
+      </div>
+      <div class="page-content">
+        <router-outlet />
+      </div>
+    </div>
+  </div>
+} @else {
+  <router-outlet />
+}
